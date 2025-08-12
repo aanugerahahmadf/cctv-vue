@@ -15,6 +15,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Models\Building; // Added
+use App\Http\Controllers\ProfileSecurityController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -65,6 +66,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/messages', [MessageController::class, 'store'])->name('messages.store');
     Route::get('/messages/unread/count', [MessageController::class, 'getUnreadCount'])->name('messages.unread.count');
     Route::get('/messages/conversations', [MessageController::class, 'getConversations'])->name('messages.conversations');
+
+    // Profile security (OTP for change email/password)
+    Route::post('/profile/security/send-email-code', [ProfileSecurityController::class, 'sendEmailChangeCode'])->name('profile.security.send-email-code');
+    Route::post('/profile/security/change-email', [ProfileSecurityController::class, 'changeEmailWithCode'])->name('profile.security.change-email');
+    Route::post('/profile/security/send-password-code', [ProfileSecurityController::class, 'sendPasswordChangeCode'])->name('profile.security.send-password-code');
+    Route::post('/profile/security/change-password', [ProfileSecurityController::class, 'changePasswordWithCode'])->name('profile.security.change-password');
 });
 
 // Admin routes
@@ -98,6 +105,10 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     // Export
     Route::get('export/cameras.csv', [ExportController::class, 'camerasCsv'])->name('export.cameras');
     Route::get('export/users.csv', [ExportController::class, 'usersCsv'])->name('export.users');
+    Route::get('export/cameras.xlsx', [ExportController::class, 'camerasXlsx'])->name('export.cameras.xlsx');
+    Route::get('export/users.xlsx', [ExportController::class, 'usersXlsx'])->name('export.users.xlsx');
+    Route::get('export/buildings.xlsx', [ExportController::class, 'buildingsXlsx'])->name('export.buildings.xlsx');
+    Route::get('export/rooms.xlsx', [ExportController::class, 'roomsXlsx'])->name('export.rooms.xlsx');
     
     // Contact management
     Route::resource('contacts', ContactController::class);

@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\VerificationCode;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Inertia\Inertia;
@@ -44,8 +44,10 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        Auth::login($user);
+        // Send verification code via email
+        VerificationCode::createAndSend($user->email, 'register', $user->id);
 
-        return redirect(route('dashboard', absolute: false));
+        // Redirect to login with status
+        return redirect()->route('login')->with('status', 'Registrasi berhasil. Kode verifikasi telah dikirim ke email Anda. Silakan verifikasi lalu login.');
     }
 }

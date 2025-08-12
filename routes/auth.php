@@ -28,6 +28,14 @@ Route::middleware('guest')->group(function () {
     Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])
         ->name('password.email');
 
+    // Code-based reset views and submit
+    Route::get('reset-password-code', [NewPasswordController::class, 'create'])->name('password.reset.code');
+    Route::post('reset-password-code', [NewPasswordController::class, 'store'])->name('password.reset.code.store');
+
+    // OTP email verification for not-authenticated
+    Route::post('verify-email/code', [VerifyEmailController::class, 'verifyWithCode'])->name('verification.code');
+
+    // Legacy token route kept for compatibility if needed
     Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])
         ->name('password.reset');
 

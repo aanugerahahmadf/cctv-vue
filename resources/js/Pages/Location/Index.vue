@@ -30,7 +30,7 @@ defineProps({
                 <div
                     v-for="building in buildings"
                     :key="building.id"
-                    class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-md transition-shadow"
+                    class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden transition-all duration-200 hover:shadow-xl hover:-translate-y-0.5"
                 >
                     <!-- Building Header -->
                     <div class="p-6">
@@ -77,7 +77,7 @@ defineProps({
                         <!-- Action Button -->
                         <Link
                             :href="route('location.building', building.id)"
-                            class="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors text-center block"
+                            class="w-full inline-flex items-center justify-center bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 text-white py-2 px-4 rounded-lg hover:shadow-[0_10px_28px_rgba(109,40,217,0.5)] hover:scale-[1.02] transition-all duration-200 text-center block"
                         >
                             Lihat Ruangan
                         </Link>

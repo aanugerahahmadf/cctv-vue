@@ -41,7 +41,7 @@ const submit = () => {
         <div class="mb-6">
             <a
                 :href="route('google.redirect')"
-                class="flex items-center justify-center gap-3 w-full rounded-lg bg-red-600 text-white py-3 px-4 hover:bg-red-700 transition-all duration-200 shadow-lg hover:shadow-xl font-medium"
+                class="flex items-center justify-center gap-3 w-full rounded-lg bg-red-600 text-white py-3 px-4 hover:bg-red-700 transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-[1.01] font-medium"
             >
                 <img alt="Gmail" src="https://www.gstatic.com/images/branding/product/1x/gmail_2020q4_48dp.png" class="w-5 h-5" />
                 <span>Lanjutkan dengan Gmail</span>

@@ -68,8 +68,14 @@ const submit = () => {
                     :disabled="form.processing"
                 >
                     <span v-if="form.processing">Mengirim...</span>
-                    <span v-else>Kirim Link Reset Password</span>
+                    <span v-else>Kirim Kode Reset</span>
                 </PrimaryButton>
+            </div>
+
+            <div class="mt-4 text-right">
+              <a :href="route('password.reset.code')" class="text-sm text-gray-600 hover:text-gray-800 underline">
+                Sudah punya kode? Reset di sini
+              </a>
             </div>
         </form>
     </GuestLayout>

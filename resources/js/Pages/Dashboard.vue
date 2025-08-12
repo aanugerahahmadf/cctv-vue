@@ -28,7 +28,7 @@ defineProps({
             <!-- Statistics Cards -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
                 <!-- Total Buildings -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 transition-all duration-200 hover:shadow-xl hover:-translate-y-0.5">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
                             <div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
@@ -45,7 +45,7 @@ defineProps({
                 </div>
 
                 <!-- Total Rooms -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 transition-all duration-200 hover:shadow-xl hover:-translate-y-0.5">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
                             <div class="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
@@ -63,7 +63,7 @@ defineProps({
                 </div>
 
                 <!-- Online Cameras -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 transition-all duration-200 hover:shadow-xl hover:-translate-y-0.5">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
                             <div class="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
@@ -80,7 +80,7 @@ defineProps({
                 </div>
 
                 <!-- Offline Cameras -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 transition-all duration-200 hover:shadow-xl hover:-translate-y-0.5">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
                             <div class="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center">
@@ -97,7 +97,7 @@ defineProps({
                 </div>
 
                 <!-- Maintenance Cameras -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 transition-all duration-200 hover:shadow-xl hover:-translate-y-0.5">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
                             <div class="w-8 h-8 bg-yellow-500 rounded-lg flex items-center justify-center">

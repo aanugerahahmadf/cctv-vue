@@ -22,41 +22,46 @@
           </div>
 
           <!-- Navigation -->
-          <nav class="hidden md:flex items-center space-x-8">
+          <nav class="hidden md:flex items-center space-x-8 text-sm">
             <Link
               :href="route('dashboard')"
-              class="font-bold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              class="font-bold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center gap-2"
               :class="{ 'text-blue-600 dark:text-blue-400': $page.url === route('dashboard') }"
             >
-              DASHBOARD
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7"/><path d="M9 22V12h6v10"/></svg>
+              <span>DASHBOARD</span>
             </Link>
             <Link
               :href="route('maps')"
-              class="font-bold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              class="font-bold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center gap-2"
               :class="{ 'text-blue-600 dark:text-blue-400': $page.url === route('maps') }"
             >
-              MAPS
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/></svg>
+              <span>MAPS</span>
             </Link>
             <Link
               :href="route('location.index')"
-              class="font-bold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              class="font-bold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center gap-2"
               :class="{ 'text-blue-600 dark:text-blue-400': $page.url.startsWith('/location') }"
             >
-              LOKASI
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="10" r="3"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
+              <span>LOKASI</span>
             </Link>
             <Link
               :href="route('contacts.public')"
-              class="font-bold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors mr-8"
+              class="font-bold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors mr-12 flex items-center gap-2"
               :class="{ 'text-blue-600 dark:text-blue-400': $page.url === route('contacts.public') }"
             >
-              CONTACT
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M22 6l-10 7L2 6"/></svg>
+              <span>CONTACT</span>
             </Link>
             <Link
               :href="route('messages.index')"
-              class="font-bold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors mr-8"
+              class="font-bold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors mr-12 flex items-center gap-2"
               :class="{ 'text-blue-600 dark:text-blue-400': $page.url === route('messages.index') }"
             >
-              CHAT
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <span>CHAT</span>
             </Link>
           </nav>
 
@@ -174,19 +179,31 @@
         </p>
       </div>
     </footer>
+
+    <!-- Flash Toast -->
+    <Toast ref="flashToast" />
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, watch } from 'vue';
-import { Head, Link, router } from '@inertiajs/vue3';
-import { usePage } from '@inertiajs/vue3';
+import { Head, Link, router, usePage } from '@inertiajs/vue3';
+import { usePage as inertiaPage } from '@inertiajs/vue3';
+import Toast from '@/Components/Toast.vue';
 
 const props = defineProps({
     user: Object,
 });
 
 const page = usePage();
+const flashToast = ref();
+
+onMounted(() => {
+  const flash = page.props.flash || {};
+  if (flash?.success) flashToast.value?.open(flash.success, 'success');
+  if (flash?.status) flashToast.value?.open(flash.status, 'info');
+  if (flash?.error) flashToast.value?.open(flash.error, 'error');
+});
 
 // Theme management
 const theme = ref(localStorage.getItem('theme') || 'system');
