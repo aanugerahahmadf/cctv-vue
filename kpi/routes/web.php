@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\BuildingController as AdminBuildingController;
 use App\Http\Controllers\Admin\CameraController as AdminCameraController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Auth\CodeController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\CameraController;
 use App\Http\Controllers\ContactController;
@@ -30,6 +31,12 @@ Route::get('/dashboard', function () {
 // Google OAuth
 Route::get('/auth/google/redirect', [GoogleController::class, 'redirect'])->name('google.redirect');
 Route::get('/auth/google/callback', [GoogleController::class, 'callback'])->name('google.callback');
+
+// Email code flows
+Route::get('/auth/code/request', [CodeController::class, 'showRequest'])->name('code.request');
+Route::post('/auth/code/send', [CodeController::class, 'send'])->name('code.send');
+Route::get('/auth/code/verify', [CodeController::class, 'showVerify'])->name('code.verify.show');
+Route::post('/auth/code/verify', [CodeController::class, 'verify'])->name('code.verify');
 
 // Maps (user)
 Route::get('/maps', [MapController::class, 'index'])->middleware(['auth', 'verified'])->name('maps');
