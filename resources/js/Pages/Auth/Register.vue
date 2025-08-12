@@ -24,6 +24,27 @@ const submit = () => {
     <GuestLayout>
         <Head title="Daftar - Kilang Pertamina Internasional" />
 
+        <!-- Gmail Register Button -->
+        <div class="mb-6">
+            <a
+                :href="route('google.redirect')"
+                class="flex items-center justify-center gap-3 w-full rounded-lg bg-red-600 text-white py-3 px-4 hover:bg-red-700 transition-all duration-200 shadow-lg hover:shadow-xl font-medium"
+            >
+                <img alt="Gmail" src="https://www.gstatic.com/images/branding/product/1x/gmail_2020q4_48dp.png" class="w-5 h-5" />
+                <span>Lanjutkan dengan Gmail</span>
+            </a>
+        </div>
+
+        <!-- Divider -->
+        <div class="relative mb-6">
+            <div class="absolute inset-0 flex items-center">
+                <div class="w-full border-t border-gray-300"></div>
+            </div>
+            <div class="relative flex justify-center text-sm">
+                <span class="px-2 bg-white text-gray-500">atau daftar dengan email</span>
+            </div>
+        </div>
+
         <form @submit.prevent="submit">
             <div>
                 <InputLabel for="name" value="Nama Lengkap" class="text-gray-700 font-medium" />

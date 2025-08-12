@@ -10,15 +10,15 @@
         </div>
       </div>
       <nav class="p-4 space-y-1">
-        <Link :href="route('admin.dashboard')" class="nav-item">Dashboard</Link>
-        <Link :href="route('admin.cameras.index')" class="nav-item">Table</Link>
-        <Link :href="route('admin.users.index')" class="nav-item">User</Link>
-        <Link :href="route('maps')" class="nav-item">Maps</Link>
-        <Link :href="route('admin.buildings.index')" class="nav-item">Location</Link>
-        <Link :href="route('admin.contacts.index')" class="nav-item">Contact</Link>
-        <Link :href="route('profile.edit')" class="nav-item">Profile</Link>
-        <Link :href="route('settings')" class="nav-item">Settings</Link>
-        <Link :href="route('admin.messages.index')" class="nav-item">Chat</Link>
+        <Link :href="route('admin.dashboard')" class="nav-item flex items-center gap-2"><Icon icon="mdi:home" class="w-4 h-4"/> <span>Dashboard</span></Link>
+        <Link :href="route('admin.cameras.index')" class="nav-item flex items-center gap-2"><Icon icon="mdi:table" class="w-4 h-4"/> <span>Table</span></Link>
+        <Link :href="route('admin.users.index')" class="nav-item flex items-center gap-2"><Icon icon="mdi:account-group" class="w-4 h-4"/> <span>User</span></Link>
+        <Link :href="route('maps')" class="nav-item flex items-center gap-2"><Icon icon="mdi:map" class="w-4 h-4"/> <span>Maps</span></Link>
+        <Link :href="route('admin.buildings.index')" class="nav-item flex items-center gap-2"><Icon icon="mdi:office-building" class="w-4 h-4"/> <span>Location</span></Link>
+        <Link :href="route('admin.contacts.index')" class="nav-item flex items-center gap-2"><Icon icon="mdi:email-outline" class="w-4 h-4"/> <span>Contact</span></Link>
+        <Link :href="route('profile.edit')" class="nav-item flex items-center gap-2"><Icon icon="mdi:account-circle" class="w-4 h-4"/> <span>Profile</span></Link>
+        <Link :href="route('settings')" class="nav-item flex items-center gap-2"><Icon icon="mdi:cog" class="w-4 h-4"/> <span>Settings</span></Link>
+        <Link :href="route('admin.messages.index')" class="nav-item flex items-center gap-2"><Icon icon="mdi:chat-processing" class="w-4 h-4"/> <span>Chat</span></Link>
       </nav>
       <div class="mt-auto p-4 text-xs text-gray-500 dark:text-gray-400">© 2024 Kilang Pertamina Internasional</div>
     </aside>
@@ -62,6 +62,7 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue';
 import { Link, router } from '@inertiajs/vue3';
+import { Icon } from '@iconify/vue';
 
 const theme = ref(localStorage.getItem('theme') || 'system');
 const applyTheme = () => {
