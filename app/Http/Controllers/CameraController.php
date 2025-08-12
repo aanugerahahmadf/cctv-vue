@@ -59,9 +59,15 @@ class CameraController extends Controller
                     'name' => $camera->name,
                     'status' => $camera->status,
                     'building' => $camera->building?->name,
+                    'building_id' => $camera->building_id,
                     'room' => $camera->room?->name,
+                    'room_id' => $camera->room_id,
                     'ip_address' => $camera->ip_address,
+                    'rtsp_url' => $camera->rtsp_url,
+                    'latitude' => $camera->latitude,
+                    'longitude' => $camera->longitude,
                     'hls_url' => $camera->hls_url,
+                    'is_public' => (bool) $camera->is_public,
                 ];
             });
 
