@@ -14,11 +14,45 @@ use Symfony\Component\Process\Process;
 
 class CameraController extends Controller
 {
-    public function index(): Response
+    public function index(Request $request): Response
     {
-        $cameras = Camera::with(['building', 'room'])
-            ->orderBy('name')
-            ->paginate(50)
+        $q = $request->string('q')->toString();
+        $status = $request->string('status')->toString();
+        $buildingId = $request->integer('building_id');
+        $sort = $request->string('sort')->toString() ?: 'name';
+        $direction = $request->string('direction')->toString() ?: 'asc';
+        $perPage = max(10, min(200, (int) $request->input('perPage', 50)));
+
+        $query = Camera::query()->with(['building', 'room']);
+
+        if ($q) {
+            $query->where(function ($w) use ($q) {
+                $w->where('name', 'like', "%{$q}%")
+                  ->orWhere('ip_address', 'like', "%{$q}%")
+                  ->orWhereHas('building', fn($b) => $b->where('name', 'like', "%{$q}%"))
+                  ->orWhereHas('room', fn($r) => $r->where('name', 'like', "%{$q}%"));
+            });
+        }
+
+        if (in_array($status, ['online','offline','maintenance'], true)) {
+            $query->where('status', $status);
+        }
+
+        if ($buildingId) {
+            $query->where('building_id', $buildingId);
+        }
+
+        if (! in_array($sort, ['name','status','ip_address','id'], true)) {
+            $sort = 'name';
+        }
+        if (! in_array(strtolower($direction), ['asc','desc'], true)) {
+            $direction = 'asc';
+        }
+
+        $cameras = $query
+            ->orderBy($sort, $direction)
+            ->paginate($perPage)
+            ->withQueryString()
             ->through(function ($camera) {
                 return [
                     'id' => $camera->id,
@@ -31,8 +65,19 @@ class CameraController extends Controller
                 ];
             });
 
+        $buildings = Building::orderBy('name')->get(['id','name']);
+
         return Inertia::render('Admin/Cameras/Index', [
             'cameras' => $cameras,
+            'filters' => [
+                'q' => $q,
+                'status' => $status,
+                'building_id' => $buildingId,
+                'sort' => $sort,
+                'direction' => $direction,
+                'perPage' => $perPage,
+            ],
+            'buildings' => $buildings,
         ]);
     }
 
@@ -219,73 +264,41 @@ class CameraController extends Controller
 
     public function stopStream(Camera $camera): JsonResponse
     {
-        // Try to kill ffmpeg for this camera (best-effort, platform dependent)
-        $pattern = "camera_{$camera->id}";
-        if (strncasecmp(PHP_OS, 'WIN', 3) === 0) {
-            // Windows: use wmic to find and kill processes containing the output path
-            @pclose(popen("wmic process where \"CommandLine like '%$pattern%' and Name='ffmpeg.exe'\" call terminate", 'r'));
-        } else {
-            $proc = new Process(['pkill', '-f', $pattern]);
-            $proc->run();
+        $dir = public_path("hls/camera_{$camera->id}");
+        if (file_exists($dir)) {
+            collect(glob("{$dir}/*"))->each(fn($f) => @unlink($f));
+            @rmdir($dir);
         }
 
-        return response()->json(['message' => 'Stream stop signal sent']);
+        return response()->json(['message' => 'Stream stopped']);
     }
 
     public function snapshot(Camera $camera): JsonResponse
     {
-        $dir = 'public/captures/camera_' . $camera->id;
-        Storage::makeDirectory($dir);
-
-        $filename = now()->format('Ymd_His') . '.jpg';
-        $fullPath = storage_path('app/' . $dir . '/' . $filename);
-
-        $command = [
-            'ffmpeg', '-y', '-rtsp_transport', 'tcp', '-i', $camera->rtsp_url,
-            '-frames:v', '1', $fullPath
-        ];
-
-        $process = new Process($command);
-        $process->setTimeout(60);
-        $process->run();
-
-        if (!$process->isSuccessful()) {
-            return response()->json(['message' => 'Failed to capture snapshot'], 500);
+        $outputDir = public_path('snapshots');
+        if (!file_exists($outputDir)) {
+            mkdir($outputDir, 0755, true);
         }
 
-        return response()->json([
-            'message' => 'Snapshot captured',
-            'url' => Storage::url('captures/camera_' . $camera->id . '/' . $filename),
-        ]);
+        $file = $outputDir.'/camera_'.$camera->id.'_'.time().'.jpg';
+        $process = new Process(['ffmpeg', '-y', '-i', $camera->rtsp_url, '-vframes', '1', $file]);
+        $process->run();
+
+        return response()->json(['message' => 'Snapshot saved', 'file' => url(str_replace(public_path(), '', $file))]);
     }
 
     public function record(Request $request, Camera $camera): JsonResponse
     {
-        $seconds = (int) ($request->input('seconds', 10));
-        $seconds = max(1, min($seconds, 300)); // 1..300 seconds
-
-        $dir = 'public/recordings/camera_' . $camera->id;
-        Storage::makeDirectory($dir);
-
-        $filename = now()->format('Ymd_His') . '.mp4';
-        $fullPath = storage_path('app/' . $dir . '/' . $filename);
-
-        $command = [
-            'ffmpeg', '-y', '-rtsp_transport', 'tcp', '-i', $camera->rtsp_url,
-            '-t', (string)$seconds, '-c:v', 'copy', '-c:a', 'aac', $fullPath
-        ];
-
-        $process = new Process($command);
-        $process->setTimeout($seconds + 30);
-        $process->run();
-
-        if (!$process->isSuccessful()) {
-            return response()->json(['message' => 'Failed to record video'], 500);
+        $seconds = (int) $request->input('seconds', 10);
+        $outputDir = public_path('recordings');
+        if (!file_exists($outputDir)) {
+            mkdir($outputDir, 0755, true);
         }
 
-        return response()->json([
-            'message' => 'Recording completed',
-            'url' => Storage::url('recordings/camera_' . $camera->id . '/' . $filename),
-        ]);
+        $file = $outputDir.'/camera_'.$camera->id.'_'.time().'.mp4';
+        $process = new Process(['ffmpeg', '-y', '-i', $camera->rtsp_url, '-t', (string) $seconds, '-c', 'copy', $file]);
+        $process->run();
+
+        return response()->json(['message' => 'Recording saved', 'file' => url(str_replace(public_path(), '', $file))]);
     }
 }

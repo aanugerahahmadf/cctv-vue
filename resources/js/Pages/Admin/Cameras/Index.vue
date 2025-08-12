@@ -1,38 +1,100 @@
 <script setup>
 import { Head, Link, router } from '@inertiajs/vue3';
+import { computed, reactive, watch } from 'vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 
 const props = defineProps({
   cameras: Object,
+  filters: Object,
+  buildings: Array,
 });
 
-const start = (id) => router.post(route('admin.cameras.start', id));
-const stop = (id) => router.post(route('admin.cameras.stop', id));
-const snap = (id) => router.post(route('admin.cameras.snapshot', id));
-const record = (id) => router.post(route('admin.cameras.record', id), { seconds: 10 });
+const state = reactive({
+  q: props.filters?.q || '',
+  status: props.filters?.status || '',
+  building_id: props.filters?.building_id || '',
+  sort: props.filters?.sort || 'name',
+  direction: props.filters?.direction || 'asc',
+  perPage: props.filters?.perPage || 50,
+});
+
+const applyFilters = () => {
+  router.visit(route('admin.cameras.index'), {
+    method: 'get',
+    data: { ...state },
+    preserveState: true,
+    preserveScroll: true,
+    replace: true,
+  });
+};
+
+watch(() => [state.status, state.building_id, state.perPage], applyFilters);
+
+const sortBy = (key) => {
+  if (state.sort === key) {
+    state.direction = state.direction === 'asc' ? 'desc' : 'asc';
+  } else {
+    state.sort = key;
+    state.direction = 'asc';
+  }
+  applyFilters();
+};
 </script>
 
 <template>
   <AdminLayout>
     <Head title="Admin - Cameras" />
 
-          <div class="flex items-center justify-between mb-4">
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Cameras</h1>
-        <div class="flex gap-2">
-          <Link :href="route('admin.cameras.create')" class="inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-semibold tracking-wide text-white transition-all duration-200 ease-out bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 shadow-[0_8px_24px_rgba(109,40,217,0.35)] hover:shadow-[0_10px_28px_rgba(109,40,217,0.5)] hover:scale-[1.015] focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900">Add Camera</Link>
-          <a href="/export/cameras.csv" class="inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-semibold tracking-wide text-white transition-all duration-200 ease-out bg-gradient-to-r from-gray-700 to-gray-900 shadow-[0_8px_24px_rgba(31,41,55,0.35)] hover:shadow-[0_10px_28px_rgba(31,41,55,0.5)] hover:scale-[1.015] focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900">Export CSV</a>
-        </div>
+    <div class="flex items-center justify-between mb-4">
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Cameras</h1>
+      <div class="flex gap-2">
+        <Link :href="route('admin.cameras.create')" class="inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-semibold tracking-wide text-white transition-all duration-200 ease-out bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 shadow-[0_8px_24px_rgba(109,40,217,0.35)] hover:shadow-[0_10px_28px_rgba(109,40,217,0.5)] hover:scale-[1.015] focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900">Add Camera</Link>
+        <a href="/export/cameras.csv" class="inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-semibold tracking-wide text-white transition-all duration-200 ease-out bg-gradient-to-r from-gray-700 to-gray-900 shadow-[0_8px_24px_rgba(31,41,55,0.35)] hover:shadow-[0_10px_28px_rgba(31,41,55,0.5)] hover:scale-[1.015] focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900">Export CSV</a>
       </div>
+    </div>
+
+    <!-- Filters Toolbar -->
+    <div class="mb-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 grid grid-cols-1 md:grid-cols-4 gap-3">
+      <div>
+        <label class="text-xs text-gray-500">Search</label>
+        <input v-model="state.q" @keyup.enter="applyFilters" placeholder="Cari nama/IP/gedung/ruang" class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm" />
+      </div>
+      <div>
+        <label class="text-xs text-gray-500">Status</label>
+        <select v-model="state.status" class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm">
+          <option value="">Semua</option>
+          <option value="online">Online</option>
+          <option value="offline">Offline</option>
+          <option value="maintenance">Maintenance</option>
+        </select>
+      </div>
+      <div>
+        <label class="text-xs text-gray-500">Gedung</label>
+        <select v-model="state.building_id" class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm">
+          <option value="">Semua</option>
+          <option v-for="b in buildings" :key="b.id" :value="b.id">{{ b.name }}</option>
+        </select>
+      </div>
+      <div>
+        <label class="text-xs text-gray-500">Per Page</label>
+        <select v-model.number="state.perPage" class="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm">
+          <option :value="25">25</option>
+          <option :value="50">50</option>
+          <option :value="100">100</option>
+          <option :value="200">200</option>
+        </select>
+      </div>
+    </div>
 
     <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-x-auto">
       <table class="min-w-full text-sm">
         <thead class="bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
           <tr>
-            <th class="px-3 py-2 text-left">Name</th>
-            <th class="px-3 py-2 text-left">IP</th>
+            <th class="px-3 py-2 text-left cursor-pointer" @click="sortBy('name')">Name</th>
+            <th class="px-3 py-2 text-left cursor-pointer" @click="sortBy('ip_address')">IP</th>
             <th class="px-3 py-2 text-left">Building</th>
             <th class="px-3 py-2 text-left">Room</th>
-            <th class="px-3 py-2 text-left">Status</th>
+            <th class="px-3 py-2 text-left cursor-pointer" @click="sortBy('status')">Status</th>
             <th class="px-3 py-2 text-left">Actions</th>
           </tr>
         </thead>
@@ -61,11 +123,11 @@ const record = (id) => router.post(route('admin.cameras.record', id), { seconds:
         </tbody>
       </table>
 
-      <div class="p-3 flex justify-between text-xs text-gray-500 dark:text-gray-400">
+      <div class="p-3 flex flex-col md:flex-row md:items-center md:justify-between gap-2 text-xs text-gray-500 dark:text-gray-400">
         <div>
           Showing {{ cameras.from }} - {{ cameras.to }} of {{ cameras.total }}
         </div>
-        <div class="flex gap-1">
+        <div class="flex gap-1 overflow-x-auto">
           <Link v-for="link in cameras.links" :key="link.url || link.label" :href="link.url || '#'" v-html="link.label" :class="['px-2 py-1 rounded', link.active ? 'bg-blue-600 text-white' : '']" />
         </div>
       </div>
