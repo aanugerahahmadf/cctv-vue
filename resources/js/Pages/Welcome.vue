@@ -57,13 +57,13 @@ function handleImageError() {
             <div class="flex space-x-4">
                 <Link
                     :href="route('login')"
-                    class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+                    class="inline-flex items-center justify-center rounded-lg px-5 py-2.5 text-sm font-semibold tracking-wide text-white transition-all duration-200 ease-out bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 shadow-[0_8px_24px_rgba(109,40,217,0.35)] hover:shadow-[0_10px_28px_rgba(109,40,217,0.5)] hover:scale-[1.02]"
                 >
                     Login
                 </Link>
                 <Link
                     :href="route('register')"
-                    class="px-6 py-2 bg-transparent border-2 border-white text-white hover:bg-white hover:text-gray-900 font-medium rounded-lg transition-colors"
+                    class="inline-flex items-center justify-center rounded-lg px-5 py-2.5 text-sm font-semibold tracking-wide text-white transition-all duration-200 ease-out bg-gradient-to-r from-gray-700 to-gray-900 shadow-[0_8px_24px_rgba(31,41,55,0.35)] hover:shadow-[0_10px_28px_rgba(31,41,55,0.5)] hover:scale-[1.02]"
                 >
                     Register
                 </Link>
@@ -102,7 +102,7 @@ function handleImageError() {
                 <div class="mt-12">
                     <Link
                         :href="route('login')"
-                        class="inline-flex items-center px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-lg transition-all duration-200 shadow-lg hover:shadow-xl"
+                        class="inline-flex items-center px-8 py-4 text-white font-bold rounded-lg text-lg transition-all duration-200 bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 shadow-[0_12px_32px_rgba(109,40,217,0.45)] hover:shadow-[0_16px_40px_rgba(109,40,217,0.6)] hover:scale-[1.03]"
                     >
                         <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
