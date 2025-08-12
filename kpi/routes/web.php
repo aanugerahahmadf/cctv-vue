@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\BuildingController as AdminBuildingController;
 use App\Http\Controllers\Admin\CameraController as AdminCameraController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\RoomController as AdminRoomController;
 use App\Http\Controllers\Auth\CodeController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\CameraController;
@@ -70,6 +71,9 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
 
     Route::get('buildings/export', [AdminBuildingController::class, 'export'])->name('buildings.export');
     Route::resource('buildings', AdminBuildingController::class)->except(['show']);
+
+    Route::get('rooms/export', [AdminRoomController::class, 'export'])->name('rooms.export');
+    Route::resource('rooms', AdminRoomController::class)->except(['show']);
 
     Route::get('cameras/export', [AdminCameraController::class, 'export'])->name('cameras.export');
     Route::resource('cameras', AdminCameraController::class)->except(['show']);
