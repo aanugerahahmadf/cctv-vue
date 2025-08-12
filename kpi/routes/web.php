@@ -5,8 +5,11 @@ use App\Http\Controllers\Admin\CameraController as AdminCameraController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\CameraController;
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\LocationController;
 use App\Http\Controllers\MapController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ChatController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -30,6 +33,22 @@ Route::get('/auth/google/callback', [GoogleController::class, 'callback'])->name
 
 // Maps (user)
 Route::get('/maps', [MapController::class, 'index'])->middleware(['auth', 'verified'])->name('maps');
+
+// Locations
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/locations', [LocationController::class, 'buildings'])->name('locations.buildings');
+    Route::get('/locations/{building}/rooms', [LocationController::class, 'rooms'])->name('locations.rooms');
+    Route::get('/locations/rooms/{room}/cameras', [LocationController::class, 'cameras'])->name('locations.cameras');
+});
+
+// Contact
+Route::get('/contact', ContactController::class)->name('contact');
+
+// Chat
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+    Route::post('/chat/send', [ChatController::class, 'send'])->name('chat.send');
+});
 
 // Cameras
 Route::middleware(['auth', 'verified'])->group(function () {
