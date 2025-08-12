@@ -26,14 +26,25 @@
     <!-- Main -->
     <div class="flex-1 flex flex-col min-w-0">
       <!-- Header -->
-      <header class="h-16 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-4">
+      <header class="h-16 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-4 relative">
         <div class="flex items-center gap-3">
           <button class="md:hidden p-2 text-gray-600 dark:text-gray-300" @click="sidebarOpen = !sidebarOpen">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
           </button>
-          <div class="relative">
-            <input v-model="q" @keyup.enter="search" placeholder="Search..." class="w-72 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm" />
-            <span class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400">⏎</span>
+          <div class="relative w-72">
+            <input v-model="q" @input="onSearchInput" @focus="openSuggestions" @keydown.enter="goFirstResult" placeholder="Cari kamera, user, gedung..." class="w-72 pl-10 pr-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-violet-500 focus:border-transparent" />
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            </div>
+            <!-- Suggestions -->
+            <div v-if="showSuggestions && suggestions.length" class="absolute z-50 mt-1 w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg shadow-xl">
+              <div class="py-2 max-h-72 overflow-auto">
+                <div v-for="s in suggestions" :key="s.href + s.label" @mousedown.prevent="goTo(s.href)" class="px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer text-sm text-gray-800 dark:text-gray-100 flex items-center gap-2">
+                  <Icon :icon="s.icon" class="w-4 h-4" />
+                  <span v-html="s.label"></span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         <div class="flex items-center gap-3">
@@ -73,11 +84,37 @@ const applyTheme = () => {
 watch(theme, applyTheme);
 onMounted(applyTheme);
 
+// Live search in header
 const q = ref('');
-const search = () => {
-  if (!q.value) return;
-  router.visit(route('admin.cameras.index'), { data: { q: q.value } });
+const showSuggestions = ref(false);
+const suggestions = ref([]);
+const openSuggestions = () => { showSuggestions.value = suggestions.value.length > 0; };
+
+const onSearchInput = async () => {
+  const query = q.value.trim();
+  if (query.length < 2) {
+    suggestions.value = [];
+    showSuggestions.value = false;
+    return;
+  }
+  const results = [];
+  try {
+    const [buildingsRes] = await Promise.all([
+      fetch(`/api/buildings/search?q=${encodeURIComponent(query)}`),
+    ]);
+    const buildingsData = await buildingsRes.json();
+    buildingsData.buildings.forEach(b => results.push({
+      label: `Gedung: <strong>${b.name}</strong>`,
+      href: route('location.building', b.id),
+      icon: 'mdi:office-building',
+    }));
+  } catch (e) { /* noop */ }
+  suggestions.value = results;
+  showSuggestions.value = results.length > 0;
 };
+
+const goTo = (href) => router.visit(href);
+const goFirstResult = () => { if (suggestions.value[0]) goTo(suggestions.value[0].href); };
 </script>
 
 <style scoped>

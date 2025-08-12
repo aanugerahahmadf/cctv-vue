@@ -16,13 +16,13 @@ const record = (id) => router.post(route('admin.cameras.record', id), { seconds:
   <AdminLayout>
     <Head title="Admin - Cameras" />
 
-    <div class="flex items-center justify-between mb-4">
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Cameras</h1>
-      <div class="flex gap-2">
-        <Link :href="route('admin.cameras.create')" class="px-3 py-2 bg-blue-600 text-white rounded-lg">Add Camera</Link>
-        <a href="/export/cameras.csv" class="px-3 py-2 bg-gray-700 text-white rounded-lg">Export CSV</a>
+          <div class="flex items-center justify-between mb-4">
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Cameras</h1>
+        <div class="flex gap-2">
+          <Link :href="route('admin.cameras.create')" class="inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-semibold tracking-wide text-white transition-all duration-200 ease-out bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 shadow-[0_8px_24px_rgba(109,40,217,0.35)] hover:shadow-[0_10px_28px_rgba(109,40,217,0.5)] hover:scale-[1.015] focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900">Add Camera</Link>
+          <a href="/export/cameras.csv" class="inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-semibold tracking-wide text-white transition-all duration-200 ease-out bg-gradient-to-r from-gray-700 to-gray-900 shadow-[0_8px_24px_rgba(31,41,55,0.35)] hover:shadow-[0_10px_28px_rgba(31,41,55,0.5)] hover:scale-[1.015] focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900">Export CSV</a>
+        </div>
       </div>
-    </div>
 
     <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-x-auto">
       <table class="min-w-full text-sm">
@@ -52,10 +52,10 @@ const record = (id) => router.post(route('admin.cameras.record', id), { seconds:
               }">{{ c.status }}</span>
             </td>
             <td class="px-3 py-2 flex gap-2">
-              <button @click="start(c.id)" class="px-2 py-1 bg-green-600 text-white rounded">Start</button>
-              <button @click="stop(c.id)" class="px-2 py-1 bg-red-600 text-white rounded">Stop</button>
-              <button @click="snap(c.id)" class="px-2 py-1 bg-gray-700 text-white rounded">Snapshot</button>
-              <button @click="record(c.id)" class="px-2 py-1 bg-purple-700 text-white rounded">Record</button>
+              <button @click="start(c.id)" class="inline-flex items-center justify-center rounded-lg px-3 py-1.5 text-xs font-semibold tracking-wide text-white transition-all duration-200 ease-out bg-gradient-to-r from-green-600 to-emerald-700 shadow-[0_6px_18px_rgba(16,185,129,0.35)] hover:shadow-[0_8px_22px_rgba(16,185,129,0.5)] hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-emerald-500">Start</button>
+              <button @click="stop(c.id)" class="inline-flex items-center justify-center rounded-lg px-3 py-1.5 text-xs font-semibold tracking-wide text-white transition-all duration-200 ease-out bg-gradient-to-r from-red-600 to-rose-700 shadow-[0_6px_18px_rgba(239,68,68,0.35)] hover:shadow-[0_8px_22px_rgba(239,68,68,0.5)] hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-rose-500">Stop</button>
+              <button @click="snap(c.id)" class="inline-flex items-center justify-center rounded-lg px-3 py-1.5 text-xs font-semibold tracking-wide text-white transition-all duration-200 ease-out bg-gradient-to-r from-gray-700 to-gray-900 shadow-[0_6px_18px_rgba(31,41,55,0.35)] hover:shadow-[0_8px_22px_rgba(31,41,55,0.5)] hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-gray-600">Snapshot</button>
+              <button @click="record(c.id)" class="inline-flex items-center justify-center rounded-lg px-3 py-1.5 text-xs font-semibold tracking-wide text-white transition-all duration-200 ease-out bg-gradient-to-r from-purple-600 to-fuchsia-700 shadow-[0_6px_18px_rgba(147,51,234,0.35)] hover:shadow-[0_8px_22px_rgba(147,51,234,0.5)] hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-fuchsia-500">Record</button>
             </td>
           </tr>
         </tbody>

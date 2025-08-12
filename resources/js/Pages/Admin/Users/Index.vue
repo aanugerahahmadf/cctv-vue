@@ -11,12 +11,12 @@ const props = defineProps({
   <AdminLayout>
     <Head title="Admin - Users" />
 
-    <div class="flex items-center justify-between mb-4">
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Users</h1>
-      <div class="flex gap-2">
-        <a :href="route('admin.export.users')" class="px-3 py-2 bg-gray-700 text-white rounded-lg">Export CSV</a>
+          <div class="flex items-center justify-between mb-4">
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Users</h1>
+        <div class="flex gap-2">
+          <a :href="route('admin.export.users')" class="inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-semibold tracking-wide text-white transition-all duration-200 ease-out bg-gradient-to-r from-gray-700 to-gray-900 shadow-[0_8px_24px_rgba(31,41,55,0.35)] hover:shadow-[0_10px_28px_rgba(31,41,55,0.5)] hover:scale-[1.015] focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900">Export CSV</a>
+        </div>
       </div>
-    </div>
 
     <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-x-auto">
       <table class="min-w-full text-sm">
