@@ -15,6 +15,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Models\Building; // Added
+use App\Http\Controllers\ProfileSecurityController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -65,6 +66,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/messages', [MessageController::class, 'store'])->name('messages.store');
     Route::get('/messages/unread/count', [MessageController::class, 'getUnreadCount'])->name('messages.unread.count');
     Route::get('/messages/conversations', [MessageController::class, 'getConversations'])->name('messages.conversations');
+
+    // Profile security (OTP for change email/password)
+    Route::post('/profile/security/send-email-code', [ProfileSecurityController::class, 'sendEmailChangeCode'])->name('profile.security.send-email-code');
+    Route::post('/profile/security/change-email', [ProfileSecurityController::class, 'changeEmailWithCode'])->name('profile.security.change-email');
+    Route::post('/profile/security/send-password-code', [ProfileSecurityController::class, 'sendPasswordChangeCode'])->name('profile.security.send-password-code');
+    Route::post('/profile/security/change-password', [ProfileSecurityController::class, 'changePasswordWithCode'])->name('profile.security.change-password');
 });
 
 // Admin routes
