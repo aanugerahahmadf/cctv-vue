@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\BuildingController as AdminBuildingController;
+use App\Http\Controllers\Admin\CameraController as AdminCameraController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\CameraController;
@@ -37,8 +39,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 // Admin routes
-Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
-    Route::get('/admin', DashboardController::class)->name('admin.dashboard');
+Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', DashboardController::class)->name('dashboard');
+
+    Route::get('buildings/export', [AdminBuildingController::class, 'export'])->name('buildings.export');
+    Route::resource('buildings', AdminBuildingController::class)->except(['show']);
+
+    Route::get('cameras/export', [AdminCameraController::class, 'export'])->name('cameras.export');
+    Route::resource('cameras', AdminCameraController::class)->except(['show']);
 });
 
 Route::middleware('auth')->group(function () {

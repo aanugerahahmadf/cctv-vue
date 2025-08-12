@@ -3,63 +3,78 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Building;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Inertia\Response;
+use Spatie\SimpleExcel\SimpleExcelWriter;
 
 class BuildingController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(): Response
     {
-        //
+        $buildings = Building::query()->select(['id','name','slug','latitude','longitude'])->latest('id')->paginate(20);
+        return Inertia::render('Admin/Buildings/Index', [
+            'buildings' => $buildings,
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function create(): Response
     {
-        //
+        return Inertia::render('Admin/Buildings/Edit', [ 'building' => null ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
-        //
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'slug' => 'nullable|string|max:255',
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
+            'description' => 'nullable|string',
+        ]);
+        if (empty($data['slug'])) { $data['slug'] = str($data['name'])->slug(); }
+        Building::create($data);
+        return to_route('admin.buildings.index');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function edit(Building $building): Response
     {
-        //
+        return Inertia::render('Admin/Buildings/Edit', [ 'building' => $building ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function update(Request $request, Building $building): RedirectResponse
     {
-        //
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'slug' => 'nullable|string|max:255',
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
+            'description' => 'nullable|string',
+        ]);
+        if (empty($data['slug'])) { $data['slug'] = str($data['name'])->slug(); }
+        $building->update($data);
+        return to_route('admin.buildings.index');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function destroy(Building $building): RedirectResponse
     {
-        //
+        $building->delete();
+        return back();
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function export()
     {
-        //
+        $path = storage_path('app/public/buildings.xlsx');
+        $writer = SimpleExcelWriter::create($path);
+        $writer->addHeader(['ID','Name','Slug','Latitude','Longitude']);
+        Building::query()->orderBy('id')->chunk(500, function ($chunk) use ($writer) {
+            foreach ($chunk as $b) {
+                $writer->addRow([$b->id, $b->name, $b->slug, $b->latitude, $b->longitude]);
+            }
+        });
+        $writer->close();
+        return response()->download($path)->deleteFileAfterSend(true);
     }
 }

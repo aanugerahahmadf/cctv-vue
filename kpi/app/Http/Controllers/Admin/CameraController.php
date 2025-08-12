@@ -3,63 +3,89 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Building;
+use App\Models\Camera;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Inertia\Response;
+use Spatie\SimpleExcel\SimpleExcelWriter;
 
 class CameraController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(): Response
     {
-        //
+        $cameras = Camera::query()->with('building:id,name')->select(['id','name','ip_address','status','building_id'])->latest('id')->paginate(20);
+        return Inertia::render('Admin/Cameras/Index', [
+            'cameras' => $cameras,
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function create(): Response
     {
-        //
+        return Inertia::render('Admin/Cameras/Edit', [
+            'camera' => null,
+            'buildings' => Building::select(['id','name'])->orderBy('name')->get(),
+        ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
-        //
+        $data = $request->validate([
+            'building_id' => 'required|exists:buildings,id',
+            'name' => 'required|string|max:255',
+            'ip_address' => 'required|ip|unique:cameras,ip_address',
+            'rtsp_url' => 'required|string',
+            'status' => 'required|in:online,offline,maintenance',
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
+            'is_public' => 'boolean',
+        ]);
+        Camera::create($data);
+        return to_route('admin.cameras.index');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function edit(Camera $camera): Response
     {
-        //
+        return Inertia::render('Admin/Cameras/Edit', [
+            'camera' => $camera,
+            'buildings' => Building::select(['id','name'])->orderBy('name')->get(),
+        ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function update(Request $request, Camera $camera): RedirectResponse
     {
-        //
+        $data = $request->validate([
+            'building_id' => 'required|exists:buildings,id',
+            'name' => 'required|string|max:255',
+            'ip_address' => 'required|ip|unique:cameras,ip_address,'.$camera->id,
+            'rtsp_url' => 'required|string',
+            'status' => 'required|in:online,offline,maintenance',
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
+            'is_public' => 'boolean',
+        ]);
+        $camera->update($data);
+        return to_route('admin.cameras.index');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function destroy(Camera $camera): RedirectResponse
     {
-        //
+        $camera->delete();
+        return back();
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function export()
     {
-        //
+        $path = storage_path('app/public/cameras.xlsx');
+        $writer = SimpleExcelWriter::create($path);
+        $writer->addHeader(['ID','Name','IP','Status','Building']);
+        Camera::query()->with('building')->orderBy('id')->chunk(500, function ($chunk) use ($writer) {
+            foreach ($chunk as $c) {
+                $writer->addRow([$c->id, $c->name, $c->ip_address, $c->status, optional($c->building)->name]);
+            }
+        });
+        $writer->close();
+        return response()->download($path)->deleteFileAfterSend(true);
     }
 }
