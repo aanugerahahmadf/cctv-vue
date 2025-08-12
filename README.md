@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Kilang Pertamina Internasional Refinery Unit VI Balongan - CCTV Monitoring System
 
 A comprehensive CCTV monitoring system for Kilang Pertamina Internasional Refinery Unit VI Balongan, featuring both user and admin interfaces with real-time video streaming capabilities.
@@ -290,3 +291,6 @@ For technical support or questions:
 **System Version**: 1.0.0  
 **Last Updated**: August 2024  
 **Maintained by**: Kilang Pertamina Internasional IT Team
+=======
+# cctv-vue
+>>>>>>> 5513d70f0cdf65b5995633c2c3960dde5f626ae3
