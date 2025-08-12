@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Auth\GoogleController;
+use App\Http\Controllers\CameraController;
 use App\Http\Controllers\MapController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
@@ -27,6 +28,13 @@ Route::get('/auth/google/callback', [GoogleController::class, 'callback'])->name
 
 // Maps (user)
 Route::get('/maps', [MapController::class, 'index'])->middleware(['auth', 'verified'])->name('maps');
+
+// Cameras
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/cameras/{camera}/live', [CameraController::class, 'live'])->name('cameras.live');
+    Route::get('/cameras/{camera}/snapshot', [CameraController::class, 'snapshot'])->name('cameras.snapshot');
+    Route::get('/cameras/{camera}/export', [CameraController::class, 'export'])->name('cameras.export');
+});
 
 // Admin routes
 Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
