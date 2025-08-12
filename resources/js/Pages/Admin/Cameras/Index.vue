@@ -117,6 +117,18 @@ const submitEdit = async () => {
     await router.put(route('admin.cameras.update', editForm.id), { ...editForm }, { preserveScroll: true, onSuccess: () => { showEdit.value = false; toast.value?.open('Camera updated', 'success'); } });
   } finally { submitting.value = false; }
 };
+
+const showDelete = ref(false);
+const deletingId = ref(null);
+const openDelete = (id) => { deletingId.value = id; showDelete.value = true; };
+const confirmDelete = async () => {
+  if (!deletingId.value) return;
+  submitting.value = true;
+  try {
+    await router.delete(route('admin.cameras.destroy', deletingId.value), { preserveScroll: true, onSuccess: () => { toast.value?.open('Camera deleted', 'success'); } });
+    showDelete.value = false;
+  } finally { submitting.value = false; deletingId.value = null; }
+};
 </script>
 
 <template>
@@ -214,6 +226,7 @@ const submitEdit = async () => {
             </td>
             <td class="px-3 py-2 flex gap-2">
               <button @click="openEdit(c)" class="inline-flex items-center justify-center rounded-md px-3 py-1.5 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 transition">Edit</button>
+              <button @click="openDelete(c.id)" class="inline-flex items-center justify-center rounded-md px-3 py-1.5 text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 transition">Delete</button>
               <button @click="start(c.id)" class="inline-flex items-center justify-center rounded-lg px-3 py-1.5 text-xs font-semibold tracking-wide text-white transition-all duration-200 ease-out bg-gradient-to-r from-green-600 to-emerald-700 shadow-[0_6px_18px_rgba(16,185,129,0.35)] hover:shadow-[0_8px_22px_rgba(16,185,129,0.5)] hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-emerald-500">Start</button>
               <button @click="stop(c.id)" class="inline-flex items-center justify-center rounded-lg px-3 py-1.5 text-xs font-semibold tracking-wide text-white transition-all duration-200 ease-out bg-gradient-to-r from-red-600 to-rose-700 shadow-[0_6px_18px_rgba(239,68,68,0.35)] hover:shadow-[0_8px_22px_rgba(239,68,68,0.5)] hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-rose-500">Stop</button>
               <button @click="snap(c.id)" class="inline-flex items-center justify-center rounded-lg px-3 py-1.5 text-xs font-semibold tracking-wide text-white transition-all duration-200 ease-out bg-gradient-to-r from-gray-700 to-gray-900 shadow-[0_6px_18px_rgba(31,41,55,0.35)] hover:shadow-[0_8px_22px_rgba(31,41,55,0.5)] hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-gray-600">Snapshot</button>
@@ -363,6 +376,18 @@ const submitEdit = async () => {
             <button @click="showEdit=false" class="px-4 py-2 rounded bg-gray-200 dark:bg-gray-700 text-sm">Cancel</button>
             <button @click="submitEdit" class="inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-semibold tracking-wide text-white transition-all duration-200 ease-out bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 shadow-[0_8px_24px_rgba(109,40,217,0.35)] hover:shadow-[0_10px_28px_rgba(109,40,217,0.5)] hover:scale-[1.015]">Update</button>
           </div>
+        </div>
+      </div>
+    </Modal>
+
+    <!-- Delete Modal -->
+    <Modal :show="showDelete" @close="showDelete=false">
+      <div class="p-6">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Delete Camera</h3>
+        <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">Are you sure you want to delete this camera? This action cannot be undone.</p>
+        <div class="flex justify-end gap-2">
+          <button @click="showDelete=false" class="px-4 py-2 rounded bg-gray-200 dark:bg-gray-700 text-sm">Cancel</button>
+          <button @click="confirmDelete" class="inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-semibold tracking-wide text-white transition-all duration-200 ease-out bg-gradient-to-r from-red-600 to-rose-700 shadow-[0_8px_24px_rgba(244,63,94,0.35)] hover:shadow-[0_10px_28px_rgba(244,63,94,0.5)] hover:scale-[1.015]">Delete</button>
         </div>
       </div>
     </Modal>
