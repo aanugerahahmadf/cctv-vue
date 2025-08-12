@@ -179,19 +179,31 @@
         </p>
       </div>
     </footer>
+
+    <!-- Flash Toast -->
+    <Toast ref="flashToast" />
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, watch } from 'vue';
-import { Head, Link, router } from '@inertiajs/vue3';
-import { usePage } from '@inertiajs/vue3';
+import { Head, Link, router, usePage } from '@inertiajs/vue3';
+import { usePage as inertiaPage } from '@inertiajs/vue3';
+import Toast from '@/Components/Toast.vue';
 
 const props = defineProps({
     user: Object,
 });
 
 const page = usePage();
+const flashToast = ref();
+
+onMounted(() => {
+  const flash = page.props.flash || {};
+  if (flash?.success) flashToast.value?.open(flash.success, 'success');
+  if (flash?.status) flashToast.value?.open(flash.status, 'info');
+  if (flash?.error) flashToast.value?.open(flash.error, 'error');
+});
 
 // Theme management
 const theme = ref(localStorage.getItem('theme') || 'system');

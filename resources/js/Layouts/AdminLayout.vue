@@ -66,14 +66,18 @@
       <footer class="px-4 py-3 text-center text-sm text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
         Copy Right Kilang Pertamina Internasional
       </footer>
+
+      <!-- Flash Toast -->
+      <Toast ref="flashToast" />
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, watch } from 'vue';
-import { Link, router } from '@inertiajs/vue3';
+import { Link, router, usePage } from '@inertiajs/vue3';
 import { Icon } from '@iconify/vue';
+import Toast from '@/Components/Toast.vue';
 
 const theme = ref(localStorage.getItem('theme') || 'system');
 const applyTheme = () => {
@@ -84,19 +88,23 @@ const applyTheme = () => {
 watch(theme, applyTheme);
 onMounted(applyTheme);
 
-// Live search in header
+const flashToast = ref();
+const page = usePage();
+onMounted(() => {
+  const flash = page.props.flash || {};
+  if (flash?.success) flashToast.value?.open(flash.success, 'success');
+  if (flash?.status) flashToast.value?.open(flash.status, 'info');
+  if (flash?.error) flashToast.value?.open(flash.error, 'error');
+});
+
 const q = ref('');
-const showSuggestions = ref(false);
 const suggestions = ref([]);
+const showSuggestions = ref(false);
 const openSuggestions = () => { showSuggestions.value = suggestions.value.length > 0; };
 
 const onSearchInput = async () => {
   const query = q.value.trim();
-  if (query.length < 2) {
-    suggestions.value = [];
-    showSuggestions.value = false;
-    return;
-  }
+  if (query.length < 2) { suggestions.value = []; showSuggestions.value = false; return; }
   const results = [];
   try {
     const [buildingsRes] = await Promise.all([
