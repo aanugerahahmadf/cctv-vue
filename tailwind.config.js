@@ -13,7 +13,20 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                sans: [
+                    'Inter Variable',
+                    'Inter',
+                    'Plus Jakarta Sans',
+                    'Manrope',
+                    ...defaultTheme.fontFamily.sans,
+                ],
+                display: [
+                    'Plus Jakarta Sans',
+                    'Inter Variable',
+                    'Inter',
+                    'Manrope',
+                    ...defaultTheme.fontFamily.sans,
+                ],
             },
         },
     },
