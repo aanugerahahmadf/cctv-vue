@@ -1,61 +1,53 @@
 <script setup>
-import { computed } from 'vue';
 import GuestLayout from '@/Layouts/GuestLayout.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 
-const props = defineProps({
-    status: {
-        type: String,
-    },
-});
+const resendForm = useForm({});
+const codeForm = useForm({ email: '', code: '' });
 
-const form = useForm({});
-
-const submit = () => {
-    form.post(route('verification.send'));
-};
-
-const verificationLinkSent = computed(
-    () => props.status === 'verification-link-sent',
-);
+const submitResend = () => resendForm.post(route('verification.send'));
+const submitCode = () => codeForm.post(route('verification.code')); 
 </script>
 
 <template>
     <GuestLayout>
-        <Head title="Verifikasi Email - Kilang Pertamina Internasional" />
+        <Head title="Verifikasi Email" />
 
-        <div class="mb-6 text-sm text-gray-600 leading-relaxed">
-            Terima kasih telah mendaftar! Sebelum memulai, mohon verifikasi alamat email Anda dengan mengklik link yang baru saja kami kirim ke email Anda. Jika Anda tidak menerima email, kami akan dengan senang hati mengirimkan yang lain.
+        <div class="mb-4 text-sm text-gray-600">
+            Terima kasih telah mendaftar! Sebelum memulai, verifikasi alamat email Anda dengan mengklik link yang kami kirim atau masukkan kode verifikasi yang kami kirim ke Gmail Anda.
         </div>
 
-        <div
-            class="mb-6 p-4 text-sm font-medium text-green-700 bg-green-100 rounded-lg border border-green-200"
-            v-if="verificationLinkSent"
-        >
-            Link verifikasi baru telah dikirim ke alamat email yang Anda berikan saat pendaftaran.
-        </div>
-
-        <form @submit.prevent="submit">
-            <div class="mt-6 flex items-center justify-between">
-                <Link
-                    :href="route('logout')"
-                    method="post"
-                    as="button"
-                    class="text-sm text-blue-600 hover:text-blue-800 underline transition-colors"
-                >
-                    Keluar
-                </Link>
-
-                <PrimaryButton
-                    class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
-                    :class="{ 'opacity-50 cursor-not-allowed': form.processing }"
-                    :disabled="form.processing"
-                >
-                    <span v-if="form.processing">Mengirim...</span>
-                    <span v-else>Kirim Ulang Email Verifikasi</span>
-                </PrimaryButton>
+        <div class="grid gap-6">
+          <!-- Enter code -->
+          <form @submit.prevent="submitCode" class="space-y-3">
+            <div>
+              <label class="text-sm text-gray-700">Email</label>
+              <TextInput v-model="codeForm.email" type="email" required autocomplete="username" class="mt-1 w-full" />
             </div>
-        </form>
+            <div>
+              <label class="text-sm text-gray-700">Kode Verifikasi</label>
+              <TextInput v-model="codeForm.code" type="text" required class="mt-1 w-full" />
+            </div>
+            <PrimaryButton :disabled="codeForm.processing">
+              <span v-if="codeForm.processing">Memverifikasi...</span>
+              <span v-else>Verifikasi dengan Kode</span>
+            </PrimaryButton>
+          </form>
+
+          <!-- Or resend link -->
+          <form @submit.prevent="submitResend">
+              <PrimaryButton :disabled="resendForm.processing">
+                  Kirim Ulang Link Verifikasi
+              </PrimaryButton>
+          </form>
+
+          <div>
+              <Link :href="route('logout')" method="post" as="button" class="mt-4 underline text-sm text-gray-600 hover:text-gray-900">
+                  Logout
+              </Link>
+          </div>
+        </div>
     </GuestLayout>
 </template>
