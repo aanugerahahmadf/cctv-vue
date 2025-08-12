@@ -5,7 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Camera;
 use App\Models\User;
+use App\Models\Building;
+use App\Models\Room;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\CamerasExport;
+use App\Exports\UsersExport;
 
 class ExportController extends Controller
 {
@@ -67,5 +72,35 @@ class ExportController extends Controller
         };
 
         return response()->stream($callback, 200, $headers);
+    }
+
+    public function camerasXlsx()
+    {
+        return Excel::download(new CamerasExport, 'cameras.xlsx');
+    }
+
+    public function usersXlsx()
+    {
+        return Excel::download(new UsersExport, 'users.xlsx');
+    }
+
+    public function buildingsXlsx()
+    {
+        $data = Building::withCount(['rooms', 'cameras'])->orderBy('name')->get(['id','name']);
+        return Excel::download(new class($data) implements \Maatwebsite\Excel\Concerns\FromArray, \Maatwebsite\Excel\Concerns\WithHeadings {
+            public function __construct(private $rows) {}
+            public function array(): array { return $this->rows->map(fn($b)=>[$b->id,$b->name,$b->rooms_count,$b->cameras_count])->toArray(); }
+            public function headings(): array { return ['ID','Name','Rooms','Cameras']; }
+        }, 'buildings.xlsx');
+    }
+
+    public function roomsXlsx()
+    {
+        $data = Room::with('building')->withCount('cameras')->orderBy('name')->get(['id','name','building_id']);
+        return Excel::download(new class($data) implements \Maatwebsite\Excel\Concerns\FromArray, \Maatwebsite\Excel\Concerns\WithHeadings {
+            public function __construct(private $rows) {}
+            public function array(): array { return $this->rows->map(fn($r)=>[$r->id,$r->name,optional($r->building)->name,$r->cameras_count])->toArray(); }
+            public function headings(): array { return ['ID','Name','Building','Cameras']; }
+        }, 'rooms.xlsx');
     }
 }

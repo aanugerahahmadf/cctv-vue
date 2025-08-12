@@ -136,7 +136,8 @@ const submitEdit = async () => {
           <label class="flex items-center gap-1 text-xs"><input type="checkbox" v-model="visible.status"> Status</label>
         </div>
         <button @click="openCreate" class="inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-semibold tracking-wide text-white transition-all duration-200 ease-out bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 shadow-[0_8px_24px_rgba(109,40,217,0.35)] hover:shadow-[0_10px_28px_rgba(109,40,217,0.5)] hover:scale-[1.015]">Add Camera</button>
-        <a href="/export/cameras.csv" class="inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-semibold tracking-wide text-white transition-all duration-200 ease-out bg-gradient-to-r from-gray-700 to-gray-900 shadow-[0_8px_24px_rgba(31,41,55,0.35)] hover:shadow-[0_10px_28px_rgba(31,41,55,0.5)] hover:scale-[1.015]">Export CSV</a>
+        <a href="/admin/export/cameras.csv" class="inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-semibold tracking-wide text-white transition-all duration-200 ease-out bg-gradient-to-r from-gray-700 to-gray-900 shadow-[0_8px_24px_rgba(31,41,55,0.35)] hover:shadow-[0_10px_28px_rgba(31,41,55,0.5)] hover:scale-[1.015]">Export CSV</a>
+        <a href="/admin/export/cameras.xlsx" class="inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-semibold tracking-wide text-white transition-all duration-200 ease-out bg-gradient-to-r from-emerald-600 to-teal-700 shadow-[0_8px_24px_rgba(13,148,136,0.35)] hover:shadow-[0_10px_28px_rgba(13,148,136,0.5)] hover:scale-[1.015]">Export Excel</a>
       </div>
     </div>
 

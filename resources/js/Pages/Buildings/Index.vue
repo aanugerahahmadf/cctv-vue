@@ -17,7 +17,11 @@ const props = defineProps({
         <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Buildings</h1>
         <p class="text-sm text-gray-600 dark:text-gray-400">Manage buildings and their coordinates.</p>
       </div>
-      <Link :href="route('admin.buildings.create')" class="inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-semibold tracking-wide text-white transition-all duration-200 ease-out bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 shadow-[0_8px_24px_rgba(109,40,217,0.35)] hover:shadow-[0_10px_28px_rgba(109,40,217,0.5)] hover:scale-[1.015]">Add Building</Link>
+      <div class="flex gap-2">
+        <Link :href="route('admin.buildings.create')" class="inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-semibold tracking-wide text-white transition-all duration-200 ease-out bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 shadow-[0_8px_24px_rgba(109,40,217,0.35)] hover:shadow-[0_10px_28px_rgba(109,40,217,0.5)] hover:scale-[1.015]">Add Building</Link>
+        <a href="/admin/export/buildings.xlsx" class="inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-semibold tracking-wide text-white transition-all duration-200 ease-out bg-gradient-to-r from-emerald-600 to-teal-700 shadow-[0_8px_24px_rgba(13,148,136,0.35)] hover:shadow-[0_10px_28px_rgba(13,148,136,0.5)] hover:scale-[1.015]">Export Buildings</a>
+        <a href="/admin/export/rooms.xlsx" class="inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-semibold tracking-wide text-white transition-all duration-200 ease-out bg-gradient-to-r from-emerald-600 to-teal-700 shadow-[0_8px_24px_rgba(13,148,136,0.35)] hover:shadow-[0_10px_28px_rgba(13,148,136,0.5)] hover:scale-[1.015]">Export Rooms</a>
+      </div>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
