@@ -37,6 +37,16 @@ const submit = () => {
             {{ status }}
         </div>
 
+        <div class="mb-4">
+            <a
+                :href="route('google.redirect')"
+                class="flex items-center justify-center gap-3 w-full rounded-md bg-red-600 text-white py-2 hover:bg-red-700 transition shadow"
+            >
+                <img alt="gmail" src="https://www.gstatic.com/images/branding/product/1x/gmail_2020q4_48dp.png" class="w-5 h-5" />
+                <span>Lanjutkan dengan Gmail</span>
+            </a>
+        </div>
+
         <form @submit.prevent="submit">
             <div>
                 <InputLabel for="email" value="Email" />
