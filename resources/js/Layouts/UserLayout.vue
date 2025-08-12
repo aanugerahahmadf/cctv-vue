@@ -46,14 +46,14 @@
             </Link>
             <Link
               :href="route('contacts.public')"
-              class="font-bold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors mr-8"
+              class="font-bold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors mr-12"
               :class="{ 'text-blue-600 dark:text-blue-400': $page.url === route('contacts.public') }"
             >
               CONTACT
             </Link>
             <Link
               :href="route('messages.index')"
-              class="font-bold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors mr-8"
+              class="font-bold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors mr-12"
               :class="{ 'text-blue-600 dark:text-blue-400': $page.url === route('messages.index') }"
             >
               CHAT
