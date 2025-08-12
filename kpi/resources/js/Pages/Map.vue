@@ -12,6 +12,7 @@ const props = defineProps({
 const mapEl = ref(null)
 let map
 let cameraLayer
+let buildingLayer
 
 const statusFilter = ref({ online: true, offline: true, maintenance: true })
 
@@ -23,10 +24,9 @@ function markerIcon(color) {
   return L.divIcon({ className: 'marker-dot', html: `<span style="display:inline-block;width:14px;height:14px;border-radius:9999px;background:${color};border:2px solid white;box-shadow:0 0 0 2px ${color};"></span>` })
 }
 
-function renderMarkers() {
-  if (cameraLayer) cameraLayer.clearLayers()
-  cameraLayer = L.layerGroup()
-
+function renderCameras() {
+  if (cameraLayer) cameraLayer.clearLayers();
+  cameraLayer = L.layerGroup();
   props.cameras.forEach(c => {
     if (!statusFilter.value[c.status]) return
     if (c.latitude && c.longitude) {
@@ -39,17 +39,44 @@ function renderMarkers() {
       cameraLayer.addLayer(m)
     }
   })
-
   cameraLayer.addTo(map)
 }
 
+function renderBuildings() {
+  buildingLayer = L.layerGroup();
+  props.buildings.forEach(b => {
+    if (b.latitude && b.longitude) {
+      const m = L.marker([b.latitude, b.longitude]);
+      m.bindPopup(`<div><strong>${b.name}</strong><div class='mt-1'><a href='/locations/${b.id}/rooms' class='text-blue-600 underline'>Lihat Ruangan</a></div></div>`);
+      m.on('click', () => {
+        map.setView([b.latitude, b.longitude], 16);
+      })
+      buildingLayer.addLayer(m)
+    }
+  })
+  buildingLayer.addTo(map)
+}
+
 onMounted(() => {
-  map = L.map(mapEl.value).setView([-6.3640, 108.3840], 14)
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 20, attribution: '&copy; OpenStreetMap' }).addTo(map)
-  renderMarkers()
+  map = L.map(mapEl.value, { center: [-6.3640, 108.3840], zoom: 14 });
+
+  const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 20, attribution: '&copy; OpenStreetMap' });
+  const satellite = L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+    subdomains: ['mt0','mt1','mt2','mt3'],
+    maxZoom: 20,
+    attribution: '&copy; Satellite',
+  });
+  osm.addTo(map)
+
+  const baseLayers = { 'OpenStreetMap': osm, 'Satellite': satellite };
+  const overlays = {};
+  L.control.layers(baseLayers, overlays).addTo(map);
+
+  renderBuildings();
+  renderCameras();
 })
 
-watch(statusFilter, renderMarkers, { deep: true })
+watch(statusFilter, renderCameras, { deep: true })
 </script>
 
 <template>

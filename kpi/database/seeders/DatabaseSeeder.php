@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             AdminUserSeeder::class,
             BuildingSeeder::class,
+            RoomSeeder::class,
             CameraSeeder::class,
         ]);
     }

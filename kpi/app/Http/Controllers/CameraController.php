@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Camera;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Support\Facades\Response;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
@@ -24,15 +23,27 @@ class CameraController extends Controller
         ]);
     }
 
-    public function snapshot(Camera $camera): HttpResponse
+    public function snapshot(Camera $camera)
     {
-        // For production: run ffmpeg -y -i rtsp -frames:v 1 -f image2 pipe:1
-        return Response::noContent(501);
+        $cmd = [
+            'ffmpeg', '-rtsp_transport', 'tcp', '-y', '-i', $camera->rtsp_url,
+            '-frames:v', '1', '-f', 'image2', 'pipe:1'
+        ];
+        $descriptorSpec = [1 => ['pipe', 'w'], 2 => ['pipe', 'w']];
+        $process = proc_open($cmd, $descriptorSpec, $pipes);
+        if (!is_resource($process)) {
+            return Response::noContent(500);
+        }
+        $imageData = stream_get_contents($pipes[1]);
+        fclose($pipes[1]);
+        fclose($pipes[2]);
+        proc_close($process);
+
+        return Response::make($imageData, 200, ['Content-Type' => 'image/jpeg']);
     }
 
     public function export(Camera $camera)
     {
-        // For production: stream HLS segments into a file; placeholder
         return Response::noContent(501);
     }
 }

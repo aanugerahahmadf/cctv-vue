@@ -1,5 +1,8 @@
 <script setup>
 import { Head, Link, useForm } from '@inertiajs/vue3'
+import { onMounted, ref } from 'vue'
+import L from 'leaflet'
+import 'leaflet/dist/leaflet.css'
 
 const props = defineProps({ camera: Object, buildings: Array })
 
@@ -21,6 +24,24 @@ function submit() {
     form.post('/admin/cameras')
   }
 }
+
+const mapEl = ref(null)
+let map, marker
+onMounted(() => {
+  map = L.map(mapEl.value).setView([form.latitude || -6.3640, form.longitude || 108.3840], 15)
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 20 }).addTo(map)
+  marker = L.marker([form.latitude || -6.3640, form.longitude || 108.3840], { draggable: true }).addTo(map)
+  marker.on('dragend', () => {
+    const { lat, lng } = marker.getLatLng()
+    form.latitude = lat.toFixed(6)
+    form.longitude = lng.toFixed(6)
+  })
+  map.on('click', (e) => {
+    marker.setLatLng(e.latlng)
+    form.latitude = e.latlng.lat.toFixed(6)
+    form.longitude = e.latlng.lng.toFixed(6)
+  })
+})
 </script>
 
 <template>
@@ -43,6 +64,7 @@ function submit() {
         <input v-model="form.latitude" placeholder="Latitude" class="w-full border p-2 rounded" />
         <input v-model="form.longitude" placeholder="Longitude" class="w-full border p-2 rounded" />
       </div>
+      <div ref="mapEl" class="w-full h-60 rounded border"></div>
       <label class="flex items-center gap-2"><input type="checkbox" v-model="form.is_public" /> Public</label>
       <button @click="submit" class="px-4 py-2 rounded bg-blue-600 text-white">Save</button>
     </div>
